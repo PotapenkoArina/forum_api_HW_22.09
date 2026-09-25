@@ -1,65 +1,57 @@
 import * as postService from '../services/post.js';
 
-const isPositiveInteger = (value) => Number.isInteger(Number(value)) && Number(value) > 0;
-
-const parseListQuery = (req, res) => {
+export function getPosts(req, res) {
   const { category, take } = req.query;
 
-  if (take !== undefined && !isPositiveInteger(take)) {
-    res.status(422).json({ message: 'take must be a positive integer' });
-    return null;
+  if (!take) {
+    return res.status(200).json(postService.getPosts(category));
   }
 
-  return { category, take: take === undefined ? undefined : Number(take) };
-};
-
-const getPosts = (req, res) => {
-  const query = parseListQuery(req, res);
-  if (!query) return;
-
-  res.status(200).json(postService.getPosts(query.category, query.take));
-};
-
-const getPostById = (req, res) => {
-  if (!isPositiveInteger(req.params.id)) {
-    res.status(422).json({ message: 'id must be a positive integer' });
-    return;
+  const takeNumber = Number(take);
+  if (!Number.isInteger(takeNumber) || takeNumber <= 0) {
+    return res.status(400).json({ message: 'Take must be a positive integer' });
   }
 
-  const post = postService.getPostById(Number(req.params.id));
+  res.status(200).json(postService.getPosts(category, takeNumber));
+}
+
+export function getPostById(req, res) {
+  const postId = Number(req.params.id);
+  if (!Number.isInteger(postId) || postId <= 0) {
+    return res.status(400).json({ message: 'Id must be a positive integer' });
+  }
+
+  const post = postService.getPostById(postId);
   if (!post) {
-    res.status(404).json({ message: 'Post not found' });
-    return;
+    return res.status(404).json({ message: 'Post not found' });
   }
 
   res.status(200).json(post);
-};
+}
 
-const createPost = async (req, res) => {
+export async function createPost(req, res) {
   const { title, content, author, category } = req.body ?? {};
 
   if (
-    typeof title !== 'string' ||
-    !title.trim() ||
-    typeof content !== 'string' ||
-    !content.trim() ||
-    typeof author !== 'string' ||
-    !author.trim() ||
-    typeof category !== 'string' ||
-    !category.trim()
+    typeof title !== 'string' || !title.trim() ||
+    typeof content !== 'string' || !content.trim() ||
+    typeof author !== 'string' || !author.trim() ||
+    typeof category !== 'string' || !category.trim()
   ) {
-    res.status(422).json({ message: 'title, content, author and category are required' });
-    return;
+    return res.status(422).json({ message: 'Invalid post' });
   }
 
-  const post = await postService.createPost({
-    title: title.trim(),
-    content: content.trim(),
-    author: author.trim(),
-    category: category.trim(),
-  });
+  try {
+    const post = await postService.createPost({
+      title: title.trim(),
+      content: content.trim(),
+      author: author.trim(),
+      category: category.trim(),
+    });
 
-  res.status(201).json(post);
-};
-
-export { getPosts, getPostById, createPost };
+    return res.status(201).json(post);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Failed to create post' });
+  }
+}
