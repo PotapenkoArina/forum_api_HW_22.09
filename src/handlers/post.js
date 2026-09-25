@@ -1,9 +1,11 @@
 import * as postService from '../services/post.js';
 
+const isPositiveInteger = (value) => Number.isInteger(Number(value)) && Number(value) > 0;
+
 const parseListQuery = (req, res) => {
   const { category, take } = req.query;
 
-  if (take !== undefined && (!/^\d+$/.test(take) || Number(take) < 1)) {
+  if (take !== undefined && !isPositiveInteger(take)) {
     res.status(422).json({ message: 'take must be a positive integer' });
     return null;
   }
@@ -19,7 +21,7 @@ const getPosts = (req, res) => {
 };
 
 const getPostById = (req, res) => {
-  if (!/^\d+$/.test(req.params.id)) {
+  if (!isPositiveInteger(req.params.id)) {
     res.status(422).json({ message: 'id must be a positive integer' });
     return;
   }

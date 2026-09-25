@@ -23,19 +23,18 @@ const posts = [
 ];
 
 const getAll = (category, take) => {
-  const filteredPosts = category
-    ? posts.filter((post) => post.category === category)
-    : posts;
+  let result = category ? posts.filter((post) => post.category === category) : posts;
 
-  return typeof take === 'number' ? filteredPosts.slice(0, take) : [...filteredPosts];
+  if (take) result = result.slice(0, take);
+  return result;
 };
 
 const getById = (id) => posts.find((post) => post.id === id);
 
-const addPost = (post) => {
-  const newPost = { id: posts.length ? posts[posts.length - 1].id + 1 : 1, ...post };
+const addPost = async (post) => {
+  const newPost = { id: posts.length + 1, ...post };
   posts.push(newPost);
-  return Promise.resolve(newPost);
+  return newPost;
 };
 
 export { getAll, getById, addPost };
