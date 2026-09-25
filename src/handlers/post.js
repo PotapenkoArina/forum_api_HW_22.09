@@ -1,6 +1,7 @@
 import * as postService from '../services/post.js';
 
 export function getPosts(req, res) {
+  // получаем и проверяем query-параметры
   const { category, take } = req.query;
 
   if (!take) {
@@ -16,6 +17,7 @@ export function getPosts(req, res) {
 }
 
 export function getPostById(req, res) {
+  // преобразуем id из строки в число
   const postId = Number(req.params.id);
   if (!Number.isInteger(postId) || postId <= 0) {
     return res.status(400).json({ message: 'Id must be a positive integer' });
@@ -30,6 +32,7 @@ export function getPostById(req, res) {
 }
 
 export async function createPost(req, res) {
+  // проверяем данные нового поста
   const { title, content, author, category } = req.body ?? {};
 
   if (

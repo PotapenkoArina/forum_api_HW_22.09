@@ -1,5 +1,6 @@
 import { getAll, getById, addPost } from '../repositories/post.js';
 
+// сервис связывает handlers с repository
 export function getPosts(category, take) {
 	return getAll(category, take);
 }
