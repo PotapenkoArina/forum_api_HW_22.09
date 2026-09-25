@@ -1,3 +1,4 @@
+
 let posts = [
   {
     id: 1,
@@ -32,6 +33,7 @@ let posts = [
 export function getAll(category, take) {
   let result = [...posts];
 
+  // фильтруем посты по категории
   if (category) {
     result = result.filter(function (post) {
       return post.category === category;
@@ -55,6 +57,7 @@ export function getById(id) {
 
 export function addPost(post) {
   const newPost = { id: posts.length + 1, ...post };
+
 
   return new Promise((resolve) => {
     setTimeout(() => {
