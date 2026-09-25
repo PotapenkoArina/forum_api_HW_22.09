@@ -1,4 +1,4 @@
-const posts = [
+let posts = [
   {
     id: 1,
     title: 'Understanding JavaScript closures',
@@ -22,19 +22,37 @@ const posts = [
   },
 ];
 
-const getAll = (category, take) => {
-  let result = category ? posts.filter((post) => post.category === category) : posts;
+export function getAll(category, take) {
+  let result = [...posts];
 
-  if (take) result = result.slice(0, take);
+  if (category) {
+    result = result.filter(function (post) {
+      return post.category === category;
+    });
+  }
+
+  if (take) {
+    return result.slice(0, take);
+  }
+
   return result;
-};
+}
 
-const getById = (id) => posts.find((post) => post.id === id);
+export function getById(id) {
+  return posts.find(
+    function (post) {
+      return post.id === id;
+    }
+  );
+}
 
-const addPost = async (post) => {
+export function addPost(post) {
   const newPost = { id: posts.length + 1, ...post };
-  posts.push(newPost);
-  return newPost;
-};
 
-export { getAll, getById, addPost };
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      posts = [...posts, newPost];
+      resolve(newPost);
+    }, 500);
+  });
+}
