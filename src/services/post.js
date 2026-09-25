@@ -1,9 +1,13 @@
-import * as postRepository from '../repositories/post.js';
+import { getAll, getById, addPost } from '../repositories/post.js';
 
-const getPosts = (category, take) => postRepository.getAll(category, take);
+export function getPosts(category, take) {
+	return getAll(category, take);
+}
 
-const getPostById = (id) => postRepository.getById(id);
+export function getPostById(id) {
+	return getById(id);
+}
 
-const createPost = (post) => postRepository.addPost(post);
-
-export { getPosts, getPostById, createPost };
+export function createPost(post) {
+	return addPost(post);
+}
