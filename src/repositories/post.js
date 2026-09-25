@@ -1,24 +1,31 @@
 let posts = [
   {
     id: 1,
-    title: 'Understanding JavaScript closures',
-    content: 'Closures let a function remember variables from its outer scope.',
-    author: 'Ada Lovelace',
-    category: 'programming',
+    title: '12345',
+    content: 'svsfv s',
+    author: 'Arina',
+    category: 'fruit',
   },
   {
     id: 2,
-    title: 'A quiet morning walk',
-    content: 'Small routines can make an ordinary day feel more intentional.',
-    author: 'Grace Hopper',
-    category: 'lifestyle',
+    title: '1234',
+    content: 'sfdbfhnd',
+    author: 'Arina',
+    category: 'vegetables',
   },
   {
     id: 3,
-    title: 'Building reliable APIs',
-    content: 'Clear contracts and focused layers make APIs easier to evolve.',
-    author: 'Alan Turing',
-    category: 'programming',
+    title: '123456',
+    content: 'fggsrdfdf',
+    author: 'Polina',
+    category: 'fruit',
+  },
+  {
+    id: 4,
+    title: '1234568',
+    content: 'fggsrdfdf',
+    author: 'Poli',
+    category: 'fruit',
   },
 ];
 
