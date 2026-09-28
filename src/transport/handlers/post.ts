@@ -1,10 +1,27 @@
-import * as postService from '../services/post.js';
+import type { RequestHandler } from 'express';
+import * as postService from '../../services/post.js';
+import type { CreatePost, PostParams, PostQuery } from '../dto/post/requests.js';
+import type { Error } from '../dto/post/errors.js';
+import type { Post } from '../dto/post/responses.js';
 
-export function getPosts(req, res) {
+export const getPosts: RequestHandler<
+  Record<string, string>,
+  Post[] | Error,
+  unknown,
+  PostQuery
+> = (req, res) => {
   const { category, take } = req.query;
 
-  if (!take) {
+  if (category !== undefined && typeof category !== 'string') {
+    return res.status(400).json({ message: 'Category must be a string' });
+  }
+
+  if (take === undefined) {
     return res.status(200).json(postService.getPosts(category));
+  }
+
+  if (typeof take !== 'string') {
+    return res.status(400).json({ message: 'Take must be a positive integer' });
   }
 
   const takeNumber = Number(take);
@@ -12,10 +29,13 @@ export function getPosts(req, res) {
     return res.status(400).json({ message: 'Take must be a positive integer' });
   }
 
-  res.status(200).json(postService.getPosts(category, takeNumber));
-}
+  return res.status(200).json(postService.getPosts(category, takeNumber));
+};
 
-export function getPostById(req, res) {
+export const getPostById: RequestHandler<
+  PostParams,
+  Post | Error
+> = (req, res) => {
   const postId = Number(req.params.id);
   if (!Number.isInteger(postId) || postId <= 0) {
     return res.status(400).json({ message: 'Id must be a positive integer' });
@@ -26,10 +46,14 @@ export function getPostById(req, res) {
     return res.status(404).json({ message: 'Post not found' });
   }
 
-  res.status(200).json(post);
-}
+  return res.status(200).json(post);
+};
 
-export async function createPost(req, res) {
+export const createPost: RequestHandler<
+  Record<string, string>,
+  Post | Error,
+  CreatePost
+> = async (req, res) => {
   const { title, content, author, category } = req.body ?? {};
 
   if (
@@ -54,4 +78,4 @@ export async function createPost(req, res) {
     console.error(error);
     return res.status(500).json({ message: 'Failed to create post' });
   }
-}
+};

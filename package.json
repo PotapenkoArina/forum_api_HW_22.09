@@ -5,13 +5,20 @@
   "license": "ISC",
   "author": "",
   "type": "module",
-  "main": "index.js",
+  "main": "src/server.ts",
   "scripts": {
-    "start": "node index.js",
+    "start": "npx tsx ./src/server.ts",
+    "typecheck": "tsc --noEmit",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "express": "^5.2.1",
-    "moment": "^2.31.0"
+    "moment": "^2.31.0",
+    "typescript": "^7.0.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.6.3",
+    "tsx": "^4.23.15"
   }
 }

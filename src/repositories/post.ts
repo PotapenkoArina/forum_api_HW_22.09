@@ -1,4 +1,6 @@
-let posts = [
+import type { Post } from '../transport/dto/post/responses.js';
+
+let posts: Post[] = [
   {
     id: 1,
     title: '12345',
@@ -29,37 +31,25 @@ let posts = [
   },
 ];
 
-export function getAll(category, take) {
+export const getAll = (category?: string, take?: number): Post[] => {
   let result = [...posts];
 
   if (category) {
-    result = result.filter(function (post) {
-      return post.category === category;
-    });
+    result = result.filter((post) => post.category === category);
   }
 
-  if (take) {
-    return result.slice(0, take);
-  }
+  return take ? result.slice(0, take) : result;
+};
 
-  return result;
-}
+export const getById = (id: number): Post | undefined => {
+  return posts.find((post) => post.id === id);
+};
 
-export function getById(id) {
-  return posts.find(
-    function (post) {
-      return post.id === id;
-    }
-  );
-}
-
-export function addPost(post) {
-  const newPost = { id: posts.length + 1, ...post };
-
+export const addPost = (post: Post): Promise<Post> => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      posts = [...posts, newPost];
-      resolve(newPost);
+      posts = [...posts, post];
+      resolve(post);
     }, 500);
   });
-}
+};
