@@ -1,3 +1,7 @@
-import type { Post } from '../../../domain/post/entity.js';
-
-export type { Post };
+export interface PostResponse {
+    id: number
+    name: string
+    content: string
+    author: string
+    category: string
+}

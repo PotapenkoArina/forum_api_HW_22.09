@@ -1,60 +1,59 @@
-import type { Post } from '../domain/post/entity.js';
-import type { NewPost, PostRepository } from '../domain/post/repository.js';
+import type { Post } from "../domain/post/entity.js"
+import type { PostRepository } from "../domain/post/repository.js"
 
 export function createPostRepository(): PostRepository {
-  let posts: Post[] = [
-    {
-      id: 1,
-      title: '12345',
-      content: 'svsfv s',
-      author: 'Arina',
-      category: 'fruit',
-    },
-    {
-      id: 2,
-      title: '1234',
-      content: 'sfdbfhnd',
-      author: 'Arina',
-      category: 'vegetables',
-    },
-    {
-      id: 3,
-      title: '123456',
-      content: 'fggsrdfdf',
-      author: 'Polina',
-      category: 'fruit',
-    },
-    {
-      id: 4,
-      title: '1234568',
-      content: 'fggsrdfdf',
-      author: 'Poli',
-      category: 'fruit',
-    },
-  ];
+    let posts: Post[] = [
+        { 
+            id: 1,
+            name: "1", 
+            content: "thdfvsvdf", 
+            author: "Arina", 
+            category: "sgsd"
+        },
+        { 
+            id: 2, 
+            name: " 2", 
+            content: "ssrgdf", 
+            author: "Kira", 
+            category: "sgbhds" 
+        },
+        { 
+            id: 3, 
+            name: " 3", 
+            content: "dfhdgne", 
+            author: "Polya", 
+            category: "dehnbgdsn" 
+        }
+    ]
 
-  return {
-    async getAll(category, take) {
-      let result = [...posts];
+    return {
+        async getAll(category?: string, take?: number) {
+            let result = [...posts]
+            if (category) {
+                result = result.filter(post => post.category === category)
+            }
+            return take === undefined ? result : result.slice(0, take)
+        },
 
-      if (category !== undefined) {
-        result = result.filter((post) => post.category === category);
-      }
+        async getById(id: number) {
+            return posts.find((post) => post.id === id)
+        },
 
-      return take === undefined ? result : result.slice(0, take);
-    },
-    async getById(id) {
-      return posts.find((post) => post.id === id);
-    },
-    async createPost(data: NewPost) {
-      await new Promise<void>((resolve) => {
-        setTimeout(resolve, 500);
-      });
+        async findByName(name: string) {
+            return posts.find((post) => post.name.toLowerCase() === name.toLowerCase())
+        },
 
-      const id = posts.reduce((highestId, post) => Math.max(highestId, post.id), 0) + 1;
-      const post = { id, ...data };
-      posts = [...posts, post];
-      return post;
-    },
-  };
+        async createPost(data) {
+            await new Promise<void>((resolve) => {
+                setTimeout(resolve, 500)
+            })
+            const newId = posts.length + 1
+            const newPost: Post = {
+                id: newId,
+                ...data
+            }
+            posts = [...posts, newPost]
+            return newPost
+        }
+    }
 }

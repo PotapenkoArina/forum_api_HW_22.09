@@ -5,9 +5,9 @@
   "license": "ISC",
   "author": "",
   "type": "module",
-  "main": "src/server.ts",
+  "main": "src/app.ts",
   "scripts": {
-    "start": "npx tsx ./src/server.ts",
+    "start": "npx tsx ./src/app.ts",
     "typecheck": "tsc --noEmit",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
