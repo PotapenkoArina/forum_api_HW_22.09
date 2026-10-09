@@ -1,59 +1,37 @@
-import type { Post } from "../domain/post/entity.js"
 import type { PostRepository } from "../domain/post/repository.js"
+import type { db } from "../prisma/db.js"
 
-export function createPostRepository(): PostRepository {
-    let posts: Post[] = [
-        { 
-            id: 1,
-            name: "1", 
-            content: "thdfvsvdf", 
-            author: "Arina", 
-            category: "sgsd"
-        },
-        { 
-            id: 2, 
-            name: " 2", 
-            content: "ssrgdf", 
-            author: "Kira", 
-            category: "sgbhds" 
-        },
-        { 
-            id: 3, 
-            name: " 3", 
-            content: "dfhdgne", 
-            author: "Polya", 
-            category: "dehnbgdsn" 
-        }
-    ]
-
+export function createPostRepository(database: typeof db): PostRepository {
     return {
         async getAll(category?: string, take?: number) {
-            let result = [...posts]
             if (category) {
-                result = result.filter(post => post.category === category)
+                const query = database.orm.public.Post.where({ category })
+                return take === undefined
+                    ? query.all()
+                    : query.limit(take).all()
             }
-            return take === undefined ? result : result.slice(0, take)
+
+            const query = database.orm.public.Post
+            return take === undefined
+                ? query.all()
+                : query.limit(take).all()
         },
 
         async getById(id: number) {
-            return posts.find((post) => post.id === id)
+            const post = await database.orm.public.Post.first({ id })
+            return post ?? undefined
         },
 
         async findByName(name: string) {
-            return posts.find((post) => post.name.toLowerCase() === name.toLowerCase())
+            const pattern = name.replace(/[\\%_]/g, '\\$&')
+            const post = await database.orm.public.Post
+                .where((row) => row.name.ilike(pattern))
+                .first()
+            return post ?? undefined
         },
 
-        async createPost(data) {
-            await new Promise<void>((resolve) => {
-                setTimeout(resolve, 500)
-            })
-            const newId = posts.length + 1
-            const newPost: Post = {
-                id: newId,
-                ...data
-            }
-            posts = [...posts, newPost]
-            return newPost
+        createPost(data) {
+            return database.orm.public.Post.create(data)
         }
     }
 }
