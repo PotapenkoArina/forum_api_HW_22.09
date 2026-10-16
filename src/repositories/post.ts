@@ -3,22 +3,30 @@ import type { db } from "../prisma/db.js"
 
 export function createPostRepository(database: typeof db): PostRepository {
     return {
-        async getAll(category?: string, take?: number) {
-            if (category) {
-                const query = database.orm.public.Post.where({ category })
-                return take === undefined
-                    ? query.all()
-                    : query.limit(take).all()
+        async getAll(category?: string, categoryId?: number, take?: number) {
+            let query = database.orm.public.Post.include("category")
+
+            if (category !== undefined) {
+                const matchedCategory = await database.orm.public.Category.first({ name: category })
+                if (!matchedCategory) {
+                    return []
+                }
+                query = query.where({ categoryId: matchedCategory.id })
             }
 
-            const query = database.orm.public.Post
+            if (categoryId !== undefined) {
+                query = query.where({ categoryId })
+            }
+
             return take === undefined
-                ? query.all()
-                : query.limit(take).all()
+                ? await query.all()
+                : await query.limit(take).all()
         },
 
         async getById(id: number) {
-            const post = await database.orm.public.Post.first({ id })
+            const post = await database.orm.public.Post
+                .include("category")
+                .first({ id })
             return post ?? undefined
         },
 
@@ -31,7 +39,11 @@ export function createPostRepository(database: typeof db): PostRepository {
         },
 
         createPost(data) {
-            return database.orm.public.Post.create(data)
+            const { categoryId, ...postData } = data
+            return database.orm.public.Post.create({
+                ...postData,
+                category: (category) => category.connect({ id: categoryId })
+            })
         }
     }
 }
