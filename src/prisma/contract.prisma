@@ -4,9 +4,18 @@ model Post {
   id         Int      @id @default(autoincrement())
   name       String
   content    String
-  author     String
+  authorId   Int?
+  authorName String?  @map("author")
+  author     User?    @relation(fields: [authorId], references: [id])
   categoryId Int
   category   Category @relation(fields: [categoryId], references: [id])
+}
+
+model User {
+  id           Int    @id @default(autoincrement())
+  email        String @unique
+  passwordHash String
+  posts        Post[]
 }
 
 model Category {

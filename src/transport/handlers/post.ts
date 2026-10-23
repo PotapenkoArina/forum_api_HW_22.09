@@ -101,32 +101,35 @@ export function createPostHandler(
             try {
                 const body: unknown = req.body
                 if (!isObject(body) || Object.keys(body).some((key) =>
-                    !["name", "content", "author", "categoryId"].includes(key)
+                    !["name", "content", "authorId", "categoryId"].includes(key)
                 )) {
                     return res.status(422).json({ message: "Invalid post data" })
                 }
 
                 const name = body.name
                 const content = body.content
-                const author = body.author
+                const authorId = body.authorId
                 const categoryId = body.categoryId
                 if (
                     typeof name !== "string" || !name.trim() ||
-                    typeof content !== "string" || !content.trim() ||
-                    typeof author !== "string" || !author.trim()
+                    typeof content !== "string" || !content.trim()
                 ) {
                     return res.status(422).json({ message: "Invalid post data" })
+                }
+
+                if (typeof authorId !== "number" || !Number.isSafeInteger(authorId) || authorId <= 0) {
+                    return res.status(400).json({ message: "authorId must be a positive integer" })
                 }
 
                 if (typeof categoryId !== "number" || !Number.isSafeInteger(categoryId) || categoryId <= 0) {
                     return res.status(400).json({ message: "categoryId must be a positive integer" })
                 }
 
-                const request: CreatePostRequest = { name, content, author, categoryId }
+                const request: CreatePostRequest = { name, content, authorId, categoryId }
                 const createdPost = await postService.createPost(request)
 
                 if (createdPost === undefined) {
-                    return res.status(404).json({ message: "Category not found" })
+                    return res.status(404).json({ message: "Category or author not found" })
                 }
                 
                 if (!createdPost) {

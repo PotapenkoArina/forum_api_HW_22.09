@@ -4,7 +4,7 @@ import type { CategoryRepository } from "../../domain/category/repository.js"
 export interface CreatePostInput {
     name: string
     content: string
-    author: string
+    authorId: number
     categoryId: number
 }
 

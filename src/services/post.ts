@@ -1,10 +1,12 @@
 import type { PostRepository } from "../domain/post/repository.js"
 import type { CategoryRepository } from "../domain/category/repository.js"
+import type { UserRepository } from "../domain/user/repository.js"
 import type { CreatePostInput, PostService } from "./post/post.types.js"
 
 export function createPostService(
     repository: PostRepository,
-    categoryRepository: CategoryRepository
+    categoryRepository: CategoryRepository,
+    userRepository: UserRepository
 ): PostService {
     return {
         getPosts(category?: string, categoryId?: number, take?: number) {
@@ -18,8 +20,9 @@ export function createPostService(
         async createPost(input: CreatePostInput) {
             const name = input.name.trim()
             const category = await categoryRepository.getById(input.categoryId)
+            const author = await userRepository.getById(input.authorId)
 
-            if (!category) {
+            if (!category || !author) {
                 return undefined
             }
             
@@ -32,7 +35,7 @@ export function createPostService(
             return repository.createPost({
                 name,
                 content: input.content.trim(),
-                author: input.author.trim(),
+                authorId: input.authorId,
                 categoryId: input.categoryId
             })
         }
