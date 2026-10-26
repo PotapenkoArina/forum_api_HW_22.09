@@ -19,6 +19,7 @@
   "dependencies": {
     "@prisma/orm-postgres": "^8.0.0-rc.17",
     "argon2": "^0.45.1",
+    "cors": "^2.8.6",
     "dotenv": "^18.0.5",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "@prisma/cli-engine": "^0.7.0",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.6.3",

@@ -1,4 +1,5 @@
 import express from 'express'
+import cors from 'cors'
 import { createPostRouter } from './transport/routers/post.js'
 import { createPostHandler } from './transport/handlers/post.js';
 import { createPostRepository } from './repositories/post.js';
@@ -14,9 +15,63 @@ import { hashPassword, verifyPassword } from './lib/password.js'
 import { signAccessToken } from './lib/jwt.js'
 import { createAuthHandler } from './transport/handlers/auth.js'
 import { createAuthRouter } from './transport/routers/auth.js'
+
+function getFrontendOrigins(value: string | undefined): string[] {
+    if (!value) {
+        return []
+    }
+
+    let url: URL
+    try {
+        url = new URL(value.trim())
+    } catch {
+        throw new Error('FRONTEND_ORIGIN must be a valid URL origin')
+    }
+
+    if (
+        !['http:', 'https:'].includes(url.protocol) ||
+        url.pathname !== '/' ||
+        url.search ||
+        url.hash
+    ) {
+        throw new Error('FRONTEND_ORIGIN must contain only the frontend origin')
+    }
+
+    const origins = [url.origin]
+    if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') {
+        url.hostname = url.hostname === 'localhost' ? '127.0.0.1' : 'localhost'
+        origins.push(url.origin)
+    }
+    return origins
+}
+
+function isLocalFrontendOrigin(origin: string): boolean {
+    try {
+        const url = new URL(origin)
+        return (
+            url.protocol === 'http:' &&
+            url.origin === origin &&
+            ['localhost', '127.0.0.1'].includes(url.hostname)
+        )
+    } catch {
+        return false
+    }
+}
+
 //const express = require('express');
 
 const app = express();
+app.use(cors({
+    origin(origin, callback) {
+        const allowedOrigins = getFrontendOrigins(process.env.FRONTEND_ORIGIN)
+        const isAllowed =
+            !origin ||
+            allowedOrigins.includes(origin) ||
+            (process.env.NODE_ENV !== 'production' && isLocalFrontendOrigin(origin))
+        callback(null, isAllowed)
+    },
+    credentials: true
+}))
 const categoryRepository = createCategoryRepository(db)
 const categoryService = createCategoryService(categoryRepository)
 const categoryHandlers = createCategoryHandler(categoryService)
