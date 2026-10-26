@@ -1,0 +1,25 @@
+// use prisma-8
+
+model Post {
+  id         Int      @id @default(autoincrement())
+  name       String
+  content    String
+  authorId   Int?
+  authorName String?  @map("author")
+  author     User?    @relation(fields: [authorId], references: [id])
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id])
+}
+
+model User {
+  id           Int    @id @default(autoincrement())
+  email        String @unique
+  passwordHash String
+  posts        Post[]
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  posts Post[]
+}
