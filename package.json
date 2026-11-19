@@ -17,6 +17,7 @@
     "contract:emit": "prisma contract emit"
   },
   "dependencies": {
+    "@js-temporal/polyfill": "^0.5.1",
     "@prisma/orm-postgres": "^8.0.0-rc.17",
     "argon2": "^0.45.1",
     "cors": "^2.8.6",

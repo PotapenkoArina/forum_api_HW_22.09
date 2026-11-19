@@ -12,9 +12,10 @@ import { db } from './prisma/db.js';
 import { createUserRepository } from './repositories/user.js'
 import { createAuthService } from './services/auth/auth.js'
 import { hashPassword, verifyPassword } from './lib/password.js'
-import { signAccessToken } from './lib/jwt.js'
+import { hashRefreshToken, signAccessToken, signRefreshToken, verifyRefreshToken } from './lib/jwt.js'
 import { createAuthHandler } from './transport/handlers/auth.js'
 import { createAuthRouter } from './transport/routers/auth.js'
+import { createRefreshSessionRepository } from './repositories/refresh-session.js'
 
 function getFrontendOrigins(value: string | undefined): string[] {
     if (!value) {
@@ -78,13 +79,17 @@ const categoryHandlers = createCategoryHandler(categoryService)
 const categoryRouter = createCategoryRouter(categoryHandlers)
 const postRepository = createPostRepository(db)
 const userRepository = createUserRepository(db)
+const refreshSessionRepository = createRefreshSessionRepository(db)
 const postService = createPostService(postRepository, categoryRepository, userRepository)
 const postHandlers = createPostHandler(postService)
 const postRouter = createPostRouter(postHandlers)
 const authService = createAuthService(
     userRepository,
     { hash: hashPassword, verify: verifyPassword },
-    { signAccessToken }
+    { signAccessToken, signRefreshToken },
+    { verifyRefreshToken },
+    refreshSessionRepository,
+    { hash: hashRefreshToken }
 )
 const authHandlers = createAuthHandler(authService)
 const authRouter = createAuthRouter(authHandlers)
